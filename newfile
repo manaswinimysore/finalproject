@@ -29,16 +29,27 @@ import plotly.tools as pt
 
 dataset = pd.read_csv('household_power_consumption.txt', sep=';', header=0, low_memory=False, infer_datetime_format=True, parse_dates={'datetime':[0,1]}, index_col=['datetime'])
 
+
+'''1.Displaying sample data of 3-5 records'''
+print(dataset.head)
+
+
 '''starting of preprocessing process'''
+
+'''2.Finding null values or missing data'''
+print(dataset.isnull().sum())
+
+
+'''3.Replacing null values(Filling)'''
 dataset.replace('?',np.nan,inplace=True)
 dataset=dataset.astype('float32')
-
-print(dataset.values)
 
 
 values = dataset.values
 dataset['sub_metering_4'] = (values[:,0] * 1000 / 60) - (values[:,4] + values[:,5] + values[:,6])
 dataset.to_csv('household_power_consumption.csv')
+
+'''4.Visualizing the data'''
 
 dataset.plot(kind='box',return_type='axes',color='green',sym='r*')
 
@@ -48,24 +59,27 @@ dataset.plot(kind='density');
 plt.show();
 
 
-'''removing outliers using inter quartile range'''
+'''7.Handling outliers using inter quartile range'''
 Q1 = dataset.quantile(0.25)
 Q3 = dataset.quantile(0.75)
 IQR = Q3 - Q1
 print(IQR)
 
+'''8.Visulaizing the data'''
+dataset.plot(kind='box',return_type='axes',color='green',sym='r*')
 print(dataset.shape)
+
+
+'''using z score'''
 z = np.abs(stats.zscore(dataset))
 dataset = dataset[(z < 3).all(axis=1)]
-
 print(dataset.shape)
-
 dataset = dataset[~((dataset < (Q1 - 1.5 * IQR)) |(dataset > (Q3 + 1.5 * IQR))).any(axis=1)]
 print(dataset.shape)
 
-'''normalization'''
 
 
+'''10.normalization of data'''
 def normalization(disease):
     dfnorm=disease.copy()
     for i in disease.columns:
@@ -76,5 +90,12 @@ def normalization(disease):
 dfnorm=normalization(dataset);
 dfnorm.plot(kind='box',return_type='axes',color='green',sym='r*')
 plt.show()
+
+'''11.Finding corelations'''
+corr_mat=dataset.corr()
+print(corr_mat)
+
+'''
+
 
 
