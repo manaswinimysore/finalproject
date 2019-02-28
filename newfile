@@ -80,14 +80,14 @@ print(dataset.shape)
 
 
 '''10.normalization of data'''
-def normalization(disease):
+def normalization_minmaxscaler(disease):
     dfnorm=disease.copy()
     for i in disease.columns:
         maxv=disease[i].max();
         minv=disease[i].min();
-        dfnorm[i]=(disease[i]-np.mean(disease[i]))/(maxv-minv);
+        dfnorm[i]=(disease[i]-minv)/(maxv-minv);
     return dfnorm
-dfnorm=normalization(dataset);
+dfnorm=normalization_minmaxscaler(dataset);
 dfnorm.plot(kind='box',return_type='axes',color='green',sym='r*')
 plt.show()
 
